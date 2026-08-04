@@ -1,0 +1,42 @@
+# ===================================================================
+# CNB 云原生构建配置文件
+# ===================================================================
+
+# -----------------------------------------------------------------------------
+# Docker 镜像构建与推送
+# -----------------------------------------------------------------------------
+main:
+  push:
+    - services:
+        - docker
+      stages:
+        - name: docker build and push
+          timeout: 3600s
+          script: |
+            CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD 2>/dev/null || echo "")
+            echo "变更文件列表: ${CHANGED_FILES:-无变更}"
+            if echo "${CHANGED_FILES}" | grep -q "Dockerfile"; then
+              echo "检测到 Dockerfile 变更，触发镜像构建"
+              docker login -u cnb -p "83IQTJBTJ13e89mZ3cMtQQlf2cF" docker.cnb.cool
+              docker build -t docker.cnb.cool/oriondawn/ai-ics-lab:latest .
+              docker push docker.cnb.cool/oriondawn/ai-ics-lab:latest
+              echo "latest 镜像更新完成"
+            else
+              echo "Dockerfile 未变更，跳过构建"
+            fi
+
+# -----------------------------------------------------------------------------
+# 云原生开发环境配置
+# -----------------------------------------------------------------------------
+$:
+  vscode:
+    - name: FrontiersCV
+      docker:
+        image: docker.cnb.cool/oriondawn/ai-ics-lab:latest
+      services:
+        - vscode
+        - docker
+      stages:
+        - name: workspace init
+          script: |
+            echo "🚀 云原生开发环境已就绪"
