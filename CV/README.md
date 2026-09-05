@@ -1,9 +1,9 @@
-# CV — 计算机视觉前沿技术
+# 📷 CV — 计算机视觉前沿技术
 
 课程实验仓库。**不依赖任何深度学习框架的自动求导**，全部使用纯 NumPy 手写前向传播与反向传播，
 从线性分类器一路实现到 Vision Transformer，配合课程课件、实验报告与技术报告，形成完整学习闭环。
 
-## 实验一览
+## 🧪 实验一览
 
 | 实验 | 主题 | 任务 | 实现 | 目录 |
 |:---:|------|------|------|------|
@@ -11,7 +11,7 @@
 | 二 | 多层感知机 (MLP) | MNIST 手写数字识别 | 纯 NumPy | [`2-MultilayerPerceptron/`](2-MultilayerPerceptron/) |
 | 三 | Vision Transformer (ViT) | MNIST 手写数字识别 | 纯 NumPy | [`3-Transformer/`](3-Transformer/) |
 
-## 目录结构
+## 📁 目录结构
 
 ```
 CV/
@@ -50,7 +50,7 @@ CV/
 └── README.md
 ```
 
-## 快速开始
+## 🚀 快速开始
 
 ### 环境依赖
 
@@ -80,7 +80,7 @@ python CV/3-Transformer/vit_numpy.py
 python CV/data/MNIST/test_mnist.py
 ```
 
-## 实验详情
+## 🔍 实验详情
 
 ### 实验一：线性神经网络与二分类
 
@@ -171,7 +171,7 @@ python CV/data/MNIST/test_mnist.py
 | 最佳验证准确率 | 78.62% |
 | 测试集准确率 | 79.42% |
 
-## 课程资料
+## 📚 课程资料
 
 ### 课件 PDF（`files/`）
 
@@ -201,7 +201,7 @@ python CV/data/MNIST/test_mnist.py
 | `references.md` | 参考文献 |
 | `聊天框之外：Agentic AI 的下一种形态.pdf` | 最终报告 PDF |
 
-## 技术栈
+## 🛠️ 技术栈
 
 | 类别 | 技术 |
 |------|------|
@@ -212,6 +212,6 @@ python CV/data/MNIST/test_mnist.py
 | 可视化 | Matplotlib |
 | 报告排版 | Markdown → HTML / XeLaTeX |
 
-## 协议
+## 📄 协议
 
 MIT License - 详见 [LICENSE](../LICENSE)

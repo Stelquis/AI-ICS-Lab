@@ -3,7 +3,7 @@
 # ===================================================================
 # 功能: 下载、安装并配置 AnySearch Skill，支持多个 AI Agent 平台
 #       自动检测运行时环境并写入配置文件
-# 参考文档: docs/anysearch-skill.md
+# 参考文档: .agent/skill/anysearch-skill.md
 #
 # 一键运行:
 #   bash /workspace/scripts/init-anysearch.sh
