@@ -47,9 +47,7 @@ echo "=== 同步到 Gitee ==="
 # -------------------------------------------------------------------
 if [ -z "${GITEE_TOKEN:-}" ]; then
     printf "🔐 请输入 Gitee 私人令牌: "
-    stty -echo
     read -r GITEE_TOKEN
-    stty echo
     echo ""
 fi
 

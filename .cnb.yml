@@ -1,36 +1,40 @@
 # ===================================================================
-# CNB 云原生构建配置文件
+# 云原生构建配置文件
 # ===================================================================
 
 # -----------------------------------------------------------------------------
-# Docker 镜像构建与推送
+# Docker 镜像（任意分支，推送时改动涉及 Dockerfile 才构建并推送）
 # -----------------------------------------------------------------------------
-main:
+"**":
   push:
-    - services:
+    - git:
+        enable: true
+        submodules:
+          enable: false
+      ifModify:
+        - Dockerfile
+      imports:
+        - https://cnb.cool/OrionDawn/SecretsHub/-/blob/main/docker.yml
+      services:
         - docker
       stages:
         - name: docker build and push
-          timeout: 3600s
           script: |
-            CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD 2>/dev/null || echo "")
-            echo "变更文件列表: ${CHANGED_FILES:-无变更}"
-            if echo "${CHANGED_FILES}" | grep -q "Dockerfile"; then
-              echo "检测到 Dockerfile 变更，触发镜像构建"
-              docker login -u cnb -p "83IQTJBTJ13e89mZ3cMtQQlf2cF" docker.cnb.cool
-              docker build -t docker.cnb.cool/oriondawn/ai-ics-lab:latest .
-              docker push docker.cnb.cool/oriondawn/ai-ics-lab:latest
-              echo "latest 镜像更新完成"
-            else
-              echo "Dockerfile 未变更，跳过构建"
-            fi
+            echo "检测到 Dockerfile 改动，触发镜像构建并推送"
+            docker login -u cnb -p "${DOCKER_TOKEN}" docker.cnb.cool
+            docker build -t docker.cnb.cool/oriondawn/ai-ics-lab:latest .
+            docker push docker.cnb.cool/oriondawn/ai-ics-lab:latest
 
 # -----------------------------------------------------------------------------
 # 云原生开发环境配置
 # -----------------------------------------------------------------------------
 $:
   vscode:
-    - name: FrontiersCV
+    - name: AI-ICS-Lab
+      git:
+        enable: true
+        submodules:
+          enable: false
       docker:
         image: docker.cnb.cool/oriondawn/ai-ics-lab:latest
       services:

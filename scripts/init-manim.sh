@@ -11,14 +11,8 @@ set -e
 # 用户配置区
 # -----------------------------------------------------------------------------
 
-# Manim 版本（留空则安装最新版）
-MANIM_VERSION="${MANIM_VERSION:-}"
-
 # Python 虚拟环境路径（复用 Dockerfile 中已创建的 /opt/venv）
 VENV_DIR="${VENV_DIR:-/opt/venv}"
-
-# APT 镜像源（留空则不更换，推荐腾讯云镜像）
-APT_MIRROR="${APT_MIRROR:-mirrors.tencent.com}"
 
 # -----------------------------------------------------------------------------
 # 环境检测函数
@@ -35,20 +29,9 @@ detect_os() {
     fi
 }
 
-detect_pkg_manager() {
-    case "$1" in
-        ubuntu|debian) echo "apt" ;;
-        centos|fedora|rhel|rocky|almalinux) echo "yum" ;;
-        arch|manjaro) echo "pacman" ;;
-        macos) echo "brew" ;;
-        *) echo "unknown" ;;
-    esac
-}
-
 check_command() { command -v "$1" &>/dev/null; }
 
 OS_ID=$(detect_os)
-PKG_MANAGER=$(detect_pkg_manager "$OS_ID")
 
 echo "=== Manim 安装与配置 ==="
 echo "  系统: ${OS_ID} / $(uname -m) / $(nproc) 核 / $(free -h | awk '/^Mem:/ {print $2}')"
@@ -130,89 +113,36 @@ echo ""
 # 安装系统依赖
 # -----------------------------------------------------------------------------
 
+# 仅支持 apt: 基础镜像已固定为 Ubuntu 24.04，镜像源由 Dockerfile 统一配置
 install_sys_deps() {
-    case "$1" in
-        apt)
-            # 配置 APT 镜像加速
-            if [ -n "$APT_MIRROR" ] && [ -f /etc/apt/sources.list.d/ubuntu.sources ]; then
-                sed -i "s|//.*archive.ubuntu.com|//${APT_MIRROR}|g" /etc/apt/sources.list.d/ubuntu.sources
-                echo "  → APT 镜像: ${APT_MIRROR}"
-            fi
-            apt-get update
+    apt-get update
 
-            if ! $FFMPEG_OK; then
-                echo "  → 安装 FFmpeg..."
-                apt-get install -y ffmpeg
-            fi
+    if ! $FFMPEG_OK; then
+        echo "  → 安装 FFmpeg..."
+        apt-get install -y ffmpeg
+    fi
 
-            if ! $LATEX_OK; then
-                echo "  → 安装 LaTeX（texlive 核心包）..."
-                apt-get install -y \
-                    texlive-latex-recommended \
-                    texlive-latex-extra \
-                    texlive-fonts-recommended \
-                    texlive-science \
-                    cm-super \
-                    dvipng
-            fi
+    if ! $LATEX_OK; then
+        echo "  → 安装 LaTeX（texlive 核心包）..."
+        apt-get install -y \
+            texlive-latex-recommended \
+            texlive-latex-extra \
+            texlive-fonts-recommended \
+            texlive-science
+    fi
 
-            # Manim 编译依赖（pycairo、manimpango）
-            echo "  → 安装编译依赖（Cairo / Pango）..."
-            apt-get install -y pkg-config libcairo2-dev libpango1.0-dev
-            ;;
-
-        yum)
-            if ! $FFMPEG_OK; then
-                yum install -y epel-release 2>/dev/null || true
-                yum install -y ffmpeg
-            fi
-
-            if ! $LATEX_OK; then
-                yum install -y texlive-latex texlive-amsmath texlive-amsfonts texlive-dvipng
-            fi
-
-            yum install -y pkg-config cairo-devel pango-devel
-            ;;
-
-        pacman)
-            if ! $FFMPEG_OK; then
-                pacman -S --noconfirm ffmpeg
-            fi
-
-            if ! $LATEX_OK; then
-                pacman -S --noconfirm texlive-latexextra texlive-fontsextra
-            fi
-
-            pacman -S --noconfirm pkg-config cairo pango
-            ;;
-
-        brew)
-            if ! $FFMPEG_OK; then
-                brew install ffmpeg
-            fi
-
-            if ! $LATEX_OK; then
-                brew install --cask mactex
-            fi
-            ;;
-
-        *)
-            echo "❌ 不支持的包管理器: $1"
-            echo "   请手动安装 FFmpeg 和 LaTeX 后重新运行本脚本"
-            return 1
-            ;;
-    esac
+    # dvipng / cm-super 为 Manim 渲染公式所必需，Dockerfile 未包含，需无条件补装
+    echo "  → 安装编译依赖（Cairo / Pango / dvipng）..."
+    apt-get install -y pkg-config libcairo2-dev libpango1.0-dev cm-super dvipng
 }
 
-if ! $FFMPEG_OK || ! $LATEX_OK; then
-    echo "--- 安装系统依赖 ---"
-    install_sys_deps "$PKG_MANAGER"
-    echo ""
+echo "--- 安装系统依赖 ---"
+install_sys_deps
+echo ""
 
-    # 重新检测
-    check_command ffmpeg && FFMPEG_OK=true
-    _check_latex && LATEX_OK=true
-fi
+# 重新检测
+check_command ffmpeg && FFMPEG_OK=true
+_check_latex && LATEX_OK=true
 
 # 最终检查
 for dep in "FFmpeg:$FFMPEG_OK" "LaTeX:$LATEX_OK" "Python:$PYTHON_OK"; do
@@ -245,17 +175,9 @@ source "$VENV_DIR/bin/activate"
 
 echo ""
 echo "--- 安装 Manim ---"
-python -m pip install --upgrade pip -q
+uv pip install manim -q
 
-if [ -n "$MANIM_VERSION" ]; then
-    echo "  → manim==${MANIM_VERSION}..."
-    pip install "manim==${MANIM_VERSION}" -q
-else
-    echo "  → manim（最新版）..."
-    pip install manim -q
-fi
-
-MANIM_VERSION_INSTALLED=$(pip show manim 2>/dev/null | awk '/^Version:/ {print $2}')
+MANIM_VERSION_INSTALLED=$(uv pip show manim | awk '/^Version:/ {print $2}')
 echo "✅ Manim ${MANIM_VERSION_INSTALLED}"
 
 # -----------------------------------------------------------------------------

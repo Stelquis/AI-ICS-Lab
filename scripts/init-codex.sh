@@ -3,7 +3,7 @@
 # CodeX 配置初始化脚本
 # ===================================================================
 # 功能: 根据环境变量或默认值生成 CodeX CLI 配置文件
-# 配置路径: /root/.codex/ 和 /home/admin/.codex/
+# 配置路径: /root/.codex/
 #
 # 一键运行:
 #   bash /workspace/scripts/init-codex.sh
@@ -36,7 +36,6 @@ CODEX_BASE_URL="${CODEX_BASE_URL:-$MY_BASE_URL}"
 CODEX_MODEL="${CODEX_MODEL:-$MY_MODEL}"
 
 ROOT_CODEX_DIR="/root/.codex"
-ADMIN_CODEX_DIR="/home/admin/.codex"
 
 echo "=== CodeX 配置初始化 ==="
 
@@ -55,11 +54,11 @@ if [ -z "$CODEX_API_KEY" ]; then
     echo "⚠️  警告: 未提供有效的 API Key，配置未生成"
     echo ""
     echo "   快速配置方法:"
-    echo "   1. 编辑本脚本: vim /usr/local/bin/init-codex.sh"
+    echo "   1. 编辑本脚本: vim /workspace/scripts/init-codex.sh"
     echo "   2. 修改 MY_API_KEY=\"sk-你的API密钥\""
-    echo "   3. 保存并运行: /usr/local/bin/init-codex.sh"
+    echo "   3. 保存并运行: bash /workspace/scripts/init-codex.sh"
     echo ""
-    mkdir -p "$ROOT_CODEX_DIR" "$ADMIN_CODEX_DIR"
+    mkdir -p "$ROOT_CODEX_DIR"
 else
     echo "✅ 检测到 CODEX_API_KEY，正在生成配置文件..."
 
@@ -90,11 +89,6 @@ EOF
     echo "✅ 已创建 /root/.codex/config.toml"
     echo "✅ 已创建 /root/.codex/auth.json"
 
-    mkdir -p "$ADMIN_CODEX_DIR"
-    cp "$ROOT_CODEX_DIR/config.toml" "$ADMIN_CODEX_DIR/"
-    cp "$ROOT_CODEX_DIR/auth.json" "$ADMIN_CODEX_DIR/"
-
-    echo "✅ 已创建 /home/admin/.codex/ 配置"
     echo ""
     echo "=== CodeX 配置完成 ==="
     echo "中转站: ${CODEX_BASE_URL}"

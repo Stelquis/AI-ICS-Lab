@@ -3,7 +3,7 @@
 # ===================================================================
 # 功能: 根据环境变量或默认值生成 Claude Code CLI 配置文件
 #       使用 DeepSeek Anthropic API 作为后端
-# 配置路径: /root/.claude/ 和 /home/admin/.claude/
+# 配置路径: /root/.claude/
 #
 # 参考文档:
 #   https://api-docs.deepseek.com/zh-cn/guides/anthropic_api
@@ -52,7 +52,6 @@ CLAUDE_CODE_SUBAGENT_MODEL="${CLAUDE_CODE_SUBAGENT_MODEL:-$MY_SUBAGENT_MODEL}"
 CLAUDE_CODE_EFFORT_LEVEL="${CLAUDE_CODE_EFFORT_LEVEL:-$MY_EFFORT_LEVEL}"
 
 ROOT_CLAUDE_DIR="/root/.claude"
-ADMIN_CLAUDE_DIR="/home/admin/.claude"
 
 echo "=== Claude Code 配置初始化（DeepSeek 后端）==="
 
@@ -79,7 +78,7 @@ if [ -z "$ANTHROPIC_AUTH_TOKEN" ]; then
     echo "   3. 修改 MY_API_KEY=\"sk-你的DeepSeek-API-Key\""
     echo "   4. 保存并运行: bash /workspace/scripts/init-claude.sh"
     echo ""
-    mkdir -p "$ROOT_CLAUDE_DIR" "$ADMIN_CLAUDE_DIR"
+    mkdir -p "$ROOT_CLAUDE_DIR"
 else
     echo "✅ 检测到 ANTHROPIC_AUTH_TOKEN，正在生成配置文件..."
 
@@ -112,11 +111,6 @@ EOF
     echo "✅ 已创建 $ROOT_CLAUDE_DIR/settings.json"
     echo "✅ 已创建 $ROOT_CLAUDE_DIR/.claude.json"
 
-    mkdir -p "$ADMIN_CLAUDE_DIR"
-    cp "$ROOT_CLAUDE_DIR/settings.json" "$ADMIN_CLAUDE_DIR/"
-    cp "$ROOT_CLAUDE_DIR/.claude.json" "$ADMIN_CLAUDE_DIR/"
-
-    echo "✅ 已创建 $ADMIN_CLAUDE_DIR/ 配置"
     echo ""
     echo "=== Claude Code 配置完成（DeepSeek 后端）==="
     echo "Base URL:    ${ANTHROPIC_BASE_URL}"

@@ -15,16 +15,13 @@ set -e
 # 用户配置区
 # -----------------------------------------------------------------------------
 
-# AnySearch Skill 版本（可指定 release tag，留空用 main 分支）
-SKILL_VERSION="main"
-
 # 安装路径: 可选 ~/.claude/skills/、~/.config/opencode/skills/、
 #           ~/.agents/skills/、或 <project>/.skills/
 INSTALL_DIR="${INSTALL_DIR:-$HOME/.agents/skills/anysearch}"
 
-# AnySearch API Key（默认使用项目共享 Key，如需更换可在 .env 中修改）
-# 在 https://anysearch.com/console/api-keys 获取
-ANYSEARCH_API_KEY="${ANYSEARCH_API_KEY:-as_sk_eec743dc5f5ceabf489c575c1ecaf646}"
+# AnySearch API Key: 在 https://anysearch.com/console/api-keys 获取
+# 留空则运行时交互式输入
+MY_API_KEY=""
 
 # -----------------------------------------------------------------------------
 # 环境检测
@@ -94,7 +91,7 @@ detect_runtime() {
 TEMP_DIR=$(mktemp -d)
 trap 'rm -rf "$TEMP_DIR"' EXIT
 
-DOWNLOAD_URL="https://github.com/anysearch-ai/anysearch-skill/archive/refs/heads/${SKILL_VERSION}.zip"
+DOWNLOAD_URL="https://github.com/anysearch-ai/anysearch-skill/archive/refs/heads/main.zip"
 
 echo "[1/3] 下载 AnySearch Skill..."
 echo "      源: ${DOWNLOAD_URL}"
@@ -200,7 +197,15 @@ echo "✅ 运行时配置已写入: ${INSTALL_DIR}/runtime.conf"
 # API Key 配置
 # -----------------------------------------------------------------------------
 
-# 写入 .env（环境变量 > 脚本默认值）
+# 优先级: 环境变量 > 脚本默认值 > 交互式输入
+if [ -z "${ANYSEARCH_API_KEY:-}" ]; then
+    if [ -n "$MY_API_KEY" ]; then
+        ANYSEARCH_API_KEY="$MY_API_KEY"
+    else
+        read -r -p "   请输入 AnySearch API Key: " ANYSEARCH_API_KEY
+    fi
+fi
+
 cat > "$INSTALL_DIR/.env" << EOF
 ANYSEARCH_API_KEY=${ANYSEARCH_API_KEY}
 EOF
