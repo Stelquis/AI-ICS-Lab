@@ -52,10 +52,15 @@
 
 ### 📈 微积分与优化 · Calculus & Optimization
 
-<details>
-<summary>📭 待建</summary>
+<details open>
+<summary>🚧 建设中 · 展开看范围</summary>
 
-导数、梯度、链式法则 → 看懂反向传播与梯度下降；理解凸 / 非凸。
+- **极限与连续** — Limit / Continuity：理解无穷小、等价替换、介值定理
+- **微分与积分** — Derivative / Integral：链式法则、换元法、牛顿-莱布尼茨公式
+- **多元微积分** — Partial Derivative / Double Integral：偏导、梯度、二重积分
+- **常微分方程** — ODE：可分离变量、一阶线性、二阶常系数
+
+👉 前往 [`Calculus/`](Calculus/)
 
 </details>
 
@@ -69,7 +74,7 @@
 |------|---------|------|:----:|
 | 线性代数 | Linear Algebra | [`LinearAlgebra/`](LinearAlgebra/) | 🚧 建设中 |
 | 概率与统计 | Probability & Statistics | — | 📭 待建 |
-| 微积分与优化 | Calculus & Optimization | — | 📭 待建 |
+| 微积分与优化 | Calculus & Optimization | [`Calculus/`](Calculus/) | 🚧 建设中 |
 
 ---
 

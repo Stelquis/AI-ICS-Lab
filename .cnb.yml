@@ -12,7 +12,7 @@
         submodules:
           enable: false
       ifModify:
-        - Dockerfile
+        - .ide/Dockerfile
       imports:
         - https://cnb.cool/OrionDawn/SecretsHub/-/blob/main/docker.yml
       services:
@@ -20,9 +20,9 @@
       stages:
         - name: docker build and push
           script: |
-            echo "检测到 Dockerfile 改动，触发镜像构建并推送"
+            echo "检测到 .ide/Dockerfile 改动，触发镜像构建并推送"
             docker login -u cnb -p "${DOCKER_TOKEN}" docker.cnb.cool
-            docker build -t docker.cnb.cool/oriondawn/ai-ics-lab:latest .
+            docker build -f .ide/Dockerfile -t docker.cnb.cool/oriondawn/ai-ics-lab:latest .
             docker push docker.cnb.cool/oriondawn/ai-ics-lab:latest
 
 # -----------------------------------------------------------------------------
